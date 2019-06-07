@@ -17,12 +17,18 @@ public class AuthorizationController {
 
     private static final String clientId = "313ae5eea45846098465c37b896f6b90";
     private static final String clientSecret = "072d6480d9f74e87a066250de4ca2070";
-    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8080/callback/");
+    private static final URI redirectUri = SpotifyHttpManager.makeUri("http://localhost:8888/callback");
+    private static String accessToken = "BQAt2Zvp3xtUEcKjMNWJUKIp4EHLfDxv_kdAbpkWNbcCDTOne2PZyzSem9ULWJeXCwcyxP7zi0UqSRkcHvk73H67Wq8qqR3L3iyjzZD";
+    private static String refreshToken = "AQAZmlY2NuxsglODAiBhu9LIfw7OQEy1nZ7lIsrHFnC9_L5Wb4zFQVqdzEbvoiWnusw8asZYgpdvA17v_zIA";
+    private static final String userId = "11124248365";
+
 
     private static final SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(clientId)
             .setClientSecret(clientSecret)
             .setRedirectUri(redirectUri)
+            .setAccessToken(accessToken)
+            .setRefreshToken(refreshToken)
             .build();
 
     private static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
@@ -51,10 +57,9 @@ public class AuthorizationController {
         }
     }
 
-    @GetMapping("/uri")
     public void controller(){
-        authorizationCodeUri_Async();
         authorizationCodeUri_Sync();
+        authorizationCodeUri_Async();
     }
 
 
