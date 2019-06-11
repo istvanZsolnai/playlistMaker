@@ -3,6 +3,7 @@ package com.codecool.spotify.playlist.controller;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.AudioAnalysis;
+import com.wrapper.spotify.model_objects.miscellaneous.Device;
 import com.wrapper.spotify.model_objects.specification.*;
 import com.wrapper.spotify.requests.data.albums.GetAlbumRequest;
 import com.wrapper.spotify.requests.data.artists.GetArtistRequest;
@@ -22,7 +23,7 @@ public class SpotifyApiController {
 
     static final String clientId = "313ae5eea45846098465c37b896f6b90";
     static final String clientSecret = "072d6480d9f74e87a066250de4ca2070";
-    private static String accessToken = "BQA6dxXGvRf5kJ-UIlLkoTSvvFQnFU5AnUdaqXODY1PxWYOXCxifiGzKGTPcMsJK7xDR4cumASR3qpeYrkaIuJThnPq-Oye-FzRZs3TpokNK4Kn0ktm6hDn-7x0p6qcBmSfJ_FsaaKRUywoLd25gpjm5o8v19dsstDCYAmBcuOv6Hr-KqNabbrxx4YV5ITYeIkc1KRTqu7Fl22ynEDWU4A";
+    private static String accessToken = "BQC4-kOYdt4RSMeOixflljIWtl3dgiSfRbG668TvT8NmPXO1G6JurQRmms9E01AeJpj5HX8F540q-TtPkmRM5tUWvRjqdrV5JE-sooTs11dbbsv-6Umx8YtdTXljum9yEuyB5v9ZkLCSsAXsO1fU2iUcG3VTa5PMi6PHvnw6wZGfEZml-o-v1Bu-qxFUrLOS8JLMjxW-S2cFQBCl4IPkBTRgzaeI6Zk";
     private static String refreshToken = "AQDbyRvRQJwzpTNA2JCjdNz5CfUB2vHjsldukzQGy9l7yfc_FGzWgYORLZZzjF827PXzWsyvqq3cxwsOOb6K_3V34qxZkrTAuUb07Y7JGjX2MRs9XViU9bsjcvuUeFov_jVoKA";
     private static final String userId = "11124248365";
 
@@ -122,6 +123,22 @@ public class SpotifyApiController {
 
     @GetMapping("/get-analysis")
     private AudioAnalysis getAudioAnalysis() throws IOException, SpotifyWebApiException {
-       return spotifyApi.getAudioAnalysisForTrack("spotify:track:26douMAqNELour6sKd2oR7").build().execute();
+      //  https://api.spotify.com/v1/audio-analysis/{id}
+
+
+        return null;
+    }
+
+    @GetMapping("/start")
+    private void startMusic() throws IOException, SpotifyWebApiException {
+        spotifyApi.startResumeUsersPlayback().build().execute();
+    }
+
+    @GetMapping("/devices")
+    @ResponseBody
+    private Device[] getUsersAvailableDevices() throws IOException, SpotifyWebApiException {
+        Device[] devices = spotifyApi.getUsersAvailableDevices().build().execute();
+        return devices;
+
     }
 }
