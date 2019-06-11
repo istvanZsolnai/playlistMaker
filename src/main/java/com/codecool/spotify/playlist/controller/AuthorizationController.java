@@ -57,8 +57,8 @@ public class AuthorizationController {
         }
     }
 
+    @GetMapping("/uri")
     public void controller(){
-        authorizationCodeUri_Sync();
         authorizationCodeUri_Async();
     }
 
