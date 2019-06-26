@@ -1,5 +1,6 @@
 package com.codecool.spotify.playlist.controller;
 
+import com.codecool.spotify.playlist.service.TrackService;
 import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.miscellaneous.AudioAnalysis;
@@ -10,6 +11,8 @@ import com.wrapper.spotify.requests.data.artists.GetArtistRequest;
 import com.wrapper.spotify.requests.data.personalization.simplified.GetUsersTopArtistsRequest;
 import com.wrapper.spotify.requests.data.playlists.CreatePlaylistRequest;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,15 +24,29 @@ import java.io.IOException;
 @Data
 public class SpotifyApiController {
 
-    static final String clientId = "313ae5eea45846098465c37b896f6b90";
-    static final String clientSecret = "072d6480d9f74e87a066250de4ca2070";
-    private static String accessToken = "BQC4-kOYdt4RSMeOixflljIWtl3dgiSfRbG668TvT8NmPXO1G6JurQRmms9E01AeJpj5HX8F540q-TtPkmRM5tUWvRjqdrV5JE-sooTs11dbbsv-6Umx8YtdTXljum9yEuyB5v9ZkLCSsAXsO1fU2iUcG3VTa5PMi6PHvnw6wZGfEZml-o-v1Bu-qxFUrLOS8JLMjxW-S2cFQBCl4IPkBTRgzaeI6Zk";
-    private static String refreshToken = "AQDbyRvRQJwzpTNA2JCjdNz5CfUB2vHjsldukzQGy9l7yfc_FGzWgYORLZZzjF827PXzWsyvqq3cxwsOOb6K_3V34qxZkrTAuUb07Y7JGjX2MRs9XViU9bsjcvuUeFov_jVoKA";
-    private static final String userId = "11124248365";
+    @Value("${client.id}")
+    final String clientId = null;
 
-    //BQAJl5GsR3YHFWjoKOraSoqXg2zOdiVvVRgUrPFYMfuT5e_EnsAFvOl1JFyRTwKvhxnYvgyYoXF2es1RBrD8J259YYOKAYVYlhjylJtA2gvaz4inV4gGbZHB8ErB9XQMoNu0nkRAGBP5eeW433_GlDlH-qFjfg9jnOP67Z383u9u2hTGUtcnjIXQDne5jKFEptuPtn1ClzXyNxszGdGs4w
+    @Value("${client.secret}")
+    final String clientSecret = null;
 
-    SpotifyApi spotifyApi = new SpotifyApi.Builder()
+    @Value("${refresh.token}")
+    private String refreshToken;
+
+    @Value("${user.id}")
+    private String userId;
+
+//    @Value("${access.token}")
+//    private String accessToken;
+
+    private String accessToken = "BQDIfHcU5OfQf4Xfu-VcKXUB_7WOYDrJIjMy3pkMjhK_B_YDCOAitahOy-uSTe_iMv2iNFCC7jmSdR6sGM48r6GL5R1yTWI7zH1leM-xffCa_b0v_wyeKujQdB3lImNtgKei4QYW7CgkbzxYI-1r8k1biVteOekXCRuwFzzWWofkvp2WUo2JbMM61Tt2lfBAjzdSnFy6b7jcDe-hP2-B2NAyFKzDh3A";
+
+    private String songNameGlobal;
+
+    @Autowired
+    TrackService trackService;
+
+    private SpotifyApi spotifyApi = new SpotifyApi.Builder()
             .setClientId(clientId)
             .setClientSecret(clientSecret)
             .setAccessToken(accessToken)
@@ -105,13 +122,10 @@ public class SpotifyApiController {
 
     @GetMapping("/recommend")
     @ResponseBody
-    private TrackSimplified[] getReccommendations() throws IOException, SpotifyWebApiException {
-        //Recommendations recommendations = spotifyApi.getRecommendations().build().execute();
+    private Recommendations getReccommendations() throws IOException, SpotifyWebApiException {
         Recommendations recommendations = spotifyApi.getRecommendations().build().execute();
         System.out.println(recommendations.getTracks());
-        //TrackSimplified[] tracks = recommendations.getTracks();
-        //System.out.println(tracks);
-        return null;
+        return recommendations;
     }
 
     @GetMapping("/addSongToPlaylist")
@@ -123,15 +137,22 @@ public class SpotifyApiController {
 
     @GetMapping("/get-analysis")
     private AudioAnalysis getAudioAnalysis() throws IOException, SpotifyWebApiException {
-      //  https://api.spotify.com/v1/audio-analysis/{id}
-
-
-        return null;
+      //  https://api.spotify.com/v1/audio-analysis/{B9GAvKqBTmSnayKSf08PBA}
+       AudioAnalysis analysis = spotifyApi.getAudioAnalysisForTrack("B9GAvKqBTmSnayKSf08PBA").build().execute();
+        System.out.println(analysis.getTrack());
+        return analysis;
     }
 
     @GetMapping("/start")
-    private void startMusic() throws IOException, SpotifyWebApiException {
+    private String startMusic() throws IOException, SpotifyWebApiException {
         spotifyApi.startResumeUsersPlayback().build().execute();
+        System.out.println("Music started");
+        return "Started";
+    }
+
+    @GetMapping("/pause")
+    private void stopMusic() throws IOException, SpotifyWebApiException {
+        spotifyApi.pauseUsersPlayback().build().execute();
     }
 
     @GetMapping("/devices")
@@ -139,6 +160,28 @@ public class SpotifyApiController {
     private Device[] getUsersAvailableDevices() throws IOException, SpotifyWebApiException {
         Device[] devices = spotifyApi.getUsersAvailableDevices().build().execute();
         return devices;
+    }
+
+    @GetMapping("/song/{name}")
+    @ResponseBody
+    public Paging<Track> getTracks(@PathVariable("name") String songName) throws IOException, SpotifyWebApiException {
+        songNameGlobal = songName;
+        Paging<Track> response = spotifyApi.searchTracks(songName).limit(1).build().execute();
+       return response;
+    }
+//
+//    @GetMapping("/song/{name}")
+//    @ResponseBody
+//    public void getTrack() throws IOException, SpotifyWebApiException {
+//        //return spotifyApi.getTrack(songNameGlobal).build().execute();
+//    }
+
+    @GetMapping("/song-name")
+    @ResponseBody
+    public void getSongName() throws IOException, SpotifyWebApiException {
+        //trackService.getRelevantDataFromTrack(getTracks(songNameGlobal))
+        trackService.getRelevanData();
+        System.out.println("Here I am");
 
     }
 }

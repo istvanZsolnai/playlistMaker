@@ -1,4 +1,4 @@
 package com.codecool.spotify.playlist.model;
 
-public class Artistss {
+public class Song {
 }

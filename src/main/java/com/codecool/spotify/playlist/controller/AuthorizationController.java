@@ -32,9 +32,9 @@ public class AuthorizationController {
             .build();
 
     private static final AuthorizationCodeUriRequest authorizationCodeUriRequest = spotifyApi.authorizationCodeUri()
-//          .state("x4xkmn9pu3j6ukrs8n")
-//          .scope("user-read-birthdate,user-read-email")
-//          .show_dialog(true)
+          .state("x4xkmn9pu3j6ukrs8n")
+          .scope("user-read-private user-read-email user-read-recently-played playlist-read-private playlist-read-private playlist-modify-public user-top-read streaming user-modify-playback-state user-read-playback-state")
+          .show_dialog(true)
             .build();
 
     public static void authorizationCodeUri_Sync() {
