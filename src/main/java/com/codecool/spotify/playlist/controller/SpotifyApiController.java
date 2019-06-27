@@ -18,10 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.lang.ProcessBuilder;
+import java.util.LinkedList;
+import java.util.List;
 
 @Controller
 @Data
@@ -42,7 +41,7 @@ public class SpotifyApiController {
 //    @Value("${access.token}")
 //    private String accessToken;
 
-    private String accessToken = "BQBhCUvutSST6OYPfUkhFdnGjnLP72ambNRbSW8t7BbL512Wg4ysdsh07Z8Qy_8CxIcO-gIMB0T_0GGh_gCSiKFSK8siuSXf8Zk7uIXCnFWqRhslW9hWxXB_Sct7Fu1DqQ9rqwOfAWy2ZuE6FH_U1cfzkVl6e4FxBu2BPxsFb-hplusMNfhn6vtEQG5MwnG2B85-8sRVcmMpGH5eM-ojV1eQ0uxvjDk";
+    private String accessToken = "BQAuQocQ3UOS49k0hu_Urq2mXToTVakQ9QMuPy9vQwkAH1wBTddx6cylby2M0pfw0wb1iXLonHSKK6SKBDgdJNLFpZB5vqoDZV5CzVLAVifQ7_fFzjMAufwx_eMy5I4QJPTxqyH2o26GxxdPac8C8y5mg356Wd_7bvpZ-2GgBVVtQ1pObVns6h35oqxmC04mHyDPsGhewJ9KyH5_mCcHbsLqn7jVg80";
 
     private String songNameGlobal;
 
@@ -125,15 +124,56 @@ public class SpotifyApiController {
 
     @GetMapping("/recommend")
     @ResponseBody
-    public Recommendations getReccommendations() throws IOException, SpotifyWebApiException {
-        Recommendations recommendations = spotifyApi.getRecommendations().seed_tracks("01iyCAUm8EvOFqVWYJ3dVX").limit(1).build().execute();
+    public List<String> getReccommendations() throws IOException, SpotifyWebApiException {
+        List<String> listOfReccomendations = getRecommendationsBasedOnRecentlyListened();
+        System.out.println(listOfReccomendations);
+
+        Recommendations recommendations = spotifyApi.getRecommendations().seed_tracks(listOfReccomendations.get(0))
+                                                                        .seed_tracks(listOfReccomendations.get(1))
+                                                                        .seed_tracks(listOfReccomendations.get(2))
+                                                                        .seed_tracks(listOfReccomendations.get(3)).limit(1).build().execute();
         System.out.println(recommendations.getTracks().length);
-        return recommendations;
+        TrackSimplified[] recommendedTracks = recommendations.getTracks();
+        List<String> listOfTrackNamesRecommended = new LinkedList<>();
+        for (TrackSimplified recom: recommendedTracks
+             ) {listOfTrackNamesRecommended.add(recom.getName());
+            System.out.println(recom.getName() + "HEREE");
+
+        }
+        return listOfTrackNamesRecommended;
+    }
+    @GetMapping("/addRecommended/{playListName}")
+    @ResponseBody
+    private String addRecommendedSongsToPlaylist(@PathVariable("playListName")String playlistName) throws IOException, SpotifyWebApiException {
+        createPlayList(playlistName);
+        for (int i = 0; i < 10 ; i++) {
+            List<String> recommendedSong = getReccommendations();
+            addSongToPlaylist(String.valueOf(recommendedSong), playlistName);
+        }
+        return "Songs Added";
+
+    }
+
+    @GetMapping("/recently")
+    @ResponseBody
+    public List<String> getRecommendationsBasedOnRecentlyListened() throws IOException, SpotifyWebApiException {
+        PagingCursorbased<PlayHistory> playHistory = spotifyApi.getCurrentUsersRecentlyPlayedTracks().limit(5).build().execute();
+        PlayHistory[] playHistoryItem = playHistory.getItems();
+        List<String> trackList = new LinkedList<>();
+        for (PlayHistory item:playHistoryItem
+             ) {
+            String listEelement = item.getTrack().getUri();
+            String[] splitElement = listEelement.split(":");
+            trackList.add(splitElement[2]);
+            System.out.println(splitElement[2]);
+        }
+        return trackList;
+
     }
 
     @GetMapping("/addSongToPlaylist/{name}")
     private void addSongToPlaylist(@PathVariable("name")String songName, String playListName) throws IOException, SpotifyWebApiException {
-        String playListId = getPlayListID("TestTestTest");
+        String playListId = getPlayListID(playListName);
         String[] songID = getTrackURI(songName);
         spotifyApi.addTracksToPlaylist(playListId, songID).build().execute();
         System.out.println("Song Added To Playlist");
@@ -166,18 +206,7 @@ public class SpotifyApiController {
         Device[] devices = spotifyApi.getUsersAvailableDevices().build().execute();
         return devices;
     }
-
-   /* @GetMapping("/curl")
-    private void getRecommendationFromCurl() throws IOException {
-        String command = "curl -X \"GET\" \"https://api.spotify.com/v1/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&seed_genres=classical%2Ccountry&seed_tracks=0c6xIDDpzE81m2q797ordA\" -H \"Accept: application/json\" -H \"Content-Type: application/json\" -H \"Authorization: Bearer BQCllgLY_KwLOYIHiZUj-aCptHwP7gQzE2Y2ww-mpbLn8aTm02-X1x_SSJ6TQHMiVix9qeyTqaVuR0_zDjg1OVNMGHlajcQUg42B6U7owjSBMnHT8QyEJfva_0wU1TrDEzQGpPJVfT7KmACf4bcR9qresj5yQP6pBJb5xbi29QhN-uD9gIxK4lVEYslDJ6SDdZtw48O2Mkan3PUnP1UI3kFNWzsjkrIvb58SnIoEIPy8jOJOjBlHBYEvO6gF01MdtXA61CJW2sI_D-SlpeH5\""
-        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
-        processBuilder.directory(new File("C:\\Users\\István\\Downloads\\curl-7.65.1_3-win64-mingw\\curl-7.65.1-win64-mingw\\bin"));
-        Process process = processBuilder.start();
-        InputStream inputStream = process.getInputStream();
-        int exitCode = process.exitValue();
-        processBuilder.command(new String[]{"curl", "-X", "GET", "https://api.spotify.com/v1/recommendations?limit=10&market=ES&seed_artists=4NHQUGzhtTLFvgF5SZesLK&seed_genres=classical%2Ccountry&seed_tracks=0c6xIDDpzE81m2q797ordA" -H "Accept: application/json" -H "Content-Type: application/json" -H "Authorization: Bearer BQCllgLY_KwLOYIHiZUj-aCptHwP7gQzE2Y2ww-mpbLn8aTm02-X1x_SSJ6TQHMiVix9qeyTqaVuR0_zDjg1OVNMGHlajcQUg42B6U7owjSBMnHT8QyEJfva_0wU1TrDEzQGpPJVfT7KmACf4bcR9qresj5yQP6pBJb5xbi29QhN-uD9gIxK4lVEYslDJ6SDdZtw48O2Mkan3PUnP1UI3kFNWzsjkrIvb58SnIoEIPy8jOJOjBlHBYEvO6gF01MdtXA61CJW2sI_D-SlpeH5"})
-    }*/
-
+    
     @GetMapping("/song/{name}")
     @ResponseBody
     public Paging<Track> getTracks(@PathVariable("name") String songName) throws IOException, SpotifyWebApiException {
