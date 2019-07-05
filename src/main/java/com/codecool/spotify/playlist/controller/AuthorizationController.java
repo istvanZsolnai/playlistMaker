@@ -4,6 +4,7 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.SpotifyHttpManager;
 import com.wrapper.spotify.requests.authorization.authorization_code.AuthorizationCodeUriRequest;
 import lombok.Data;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -37,7 +38,7 @@ public class AuthorizationController {
           .show_dialog(true)
             .build();
 
-    public static void authorizationCodeUri_Sync() {
+    public void authorizationCodeUri_Sync() {
         final URI uri = authorizationCodeUriRequest.execute();
         System.out.println("asdadasdasfa");
         System.out.println("URI: " + uri.toString());
@@ -56,11 +57,5 @@ public class AuthorizationController {
             System.out.println("Error: " + e.getCause().getMessage());
         }
     }
-
-    @GetMapping("/uri")
-    public void controller(){
-        authorizationCodeUri_Async();
-    }
-
 
 }
