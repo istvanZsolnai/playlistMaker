@@ -1,6 +1,5 @@
 package com.codecool.spotify.playlist;
 
-import com.codecool.spotify.playlist.controller.AuthorizationController;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -17,5 +16,7 @@ public class PlaylistApplication {
     RestTemplate restTemplate(){
         return new RestTemplate();
     }
+
+
 
 }
