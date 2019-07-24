@@ -1,26 +1,42 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>PlaylistMaker</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Playlist Maker</title>
 </head>
 <body>
 
-<iframe src="https://open.spotify.com/embed/playlist/7nzIfYic8bUbMTmNejE4sh" width="300" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<p th:utext="${}"></p>
+
+<iframe src="https://open.spotify.com/embed/playlist/7nzIfYic8bUbMTmNejE4sh" width="600" height="760" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 
 <form>
-    <input type="button" value="Play music on spotify" onclick="window.location.href='http://localhost:8080/start'" />
+    <input type="button" class="btn btn-outline-success" value="Play music on Spotify" onclick="window.location.href='http://localhost:8080/start'" />
 </form>
+<br>
 <form>
-    <input type="button" value="Pause music on spotify" onclick="window.location.href='http://localhost:8080/pause'" />
+    <input type="button" class="btn btn-outline-success" value="Pause music on Spotify" onclick="window.location.href='http://localhost:8080/pause'" />
+</form>
+<br>
+
+<form action="http://localhost:8080/addRecommended" method="get">
+    Playlist name: <br>
+    <input type="text" name="playListName"  /><br>
+    <br>
+    <input type="submit" class="btn btn-outline-success" value="Create Playlist"  />
 </form>
 
 
-<form>
-    <input type="button" value="Create Playlist" onclick="window.location.href='localhost:8080/addRecommended/{playListName}'" />
-</form>
-
-
-
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>
