@@ -7,31 +7,48 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
+    <link rel="stylesheet" type="text/css" href="style.css">
     <title>Playlist Maker</title>
 </head>
 <body>
+<div id="div1">
 
-<p th:utext="${}"></p>
+    <h1>Spotify Playlist Creator</h1>
+</div>
+<div id="div2">
+    <p th:src="${}"></p>
+    <iframe id="player" src="https://open.spotify.com/embed/playlist/7nzIfYic8bUbMTmNejE4sh" width="600" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 
-<iframe src="https://open.spotify.com/embed/playlist/7nzIfYic8bUbMTmNejE4sh" width="600" height="760" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-
-<form>
-    <input type="button" class="btn btn-outline-success" value="Play music on Spotify" onclick="window.location.href='http://localhost:8080/start'" />
-</form>
-<br>
-<form>
-    <input type="button" class="btn btn-outline-success" value="Pause music on Spotify" onclick="window.location.href='http://localhost:8080/pause'" />
-</form>
-<br>
-
-<form action="http://localhost:8080/addRecommended" method="get">
-    Playlist name: <br>
-    <input type="text" name="playListName"  /><br>
+</div>
+<div id="div3">
+    <form action="http://localhost:8080/addRecommended" method="get">
+        Playlist name: <br>
+        <input type="text" name="playListName"  /><br>
+        <input type="submit" class="btn btn-success" value="Create Playlist"  />
+    </form>
+</div>
+<div id="div4">
+    <table>
+        <tr>
+            <td>
+    <form>
+        <input type="button" class="btn btn-success" value="Play music on Spotify" onclick="window.location.href='http://localhost:8080/start'" />
+    </form>
+            </td>
+            <td>
+    <form>
+        <input type="button" class="btn btn-success" value="Pause music on Spotify" onclick="window.location.href='http://localhost:8080/pause'" />
+    </form>
+                <td>
+                <form>
+                    <input type="button" class="btn btn-success" value="Next music on Spotify" onclick="window.location.href='http://localhost:8080/next'" />
+                </form>
+        </td>
+            </td>
+        </tr>
+    </table>
     <br>
-    <input type="submit" class="btn btn-outline-success" value="Create Playlist"  />
-</form>
-
+</div>
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
